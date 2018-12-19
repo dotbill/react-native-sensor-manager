@@ -18,40 +18,40 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 
-public class MagnetometerRecord implements SensorEventListener {
+public class GravityRecord implements SensorEventListener {
 
     private SensorManager mSensorManager;
-    private Sensor mMagnetometer;
+    private Sensor mGravity;
     private long lastUpdate = 0;
     private int i = 0, n = 0;
 	private int delay;
+	private int isRegistered = 0;
 
 	private ReactContext mReactContext;
 	private Arguments mArguments;
 
 
-    public MagnetometerRecord(ReactApplicationContext reactContext) {
+    public GravityRecord(ReactApplicationContext reactContext) {
         mSensorManager = (SensorManager)reactContext.getSystemService(reactContext.SENSOR_SERVICE);
+        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
 		mReactContext = reactContext;
     }
 
 	public int start(int delay) {
-
-		if (mMagnetometer == null ) {
-            sendEvent("OrientationNotAvailable", null);
-            return (0);
-        }
-		
 		this.delay = delay;
-		if ((mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)) != null) {
-			mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_FASTEST);
+		if (mGravity != null && isRegistered == 0) {
+			mSensorManager.registerListener(this, mGravity, SensorManager.SENSOR_DELAY_FASTEST);
+			isRegistered = 1;
 			return (1);
 		}
 		return (0);
 	}
 
     public void stop() {
-        mSensorManager.unregisterListener(this);
+		if (isRegistered == 1) {
+			mSensorManager.unregisterListener(this);
+			isRegistered = 0;
+		}
     }
 
 	private void sendEvent(String eventName, @Nullable WritableMap params)
@@ -70,16 +70,16 @@ public class MagnetometerRecord implements SensorEventListener {
         Sensor mySensor = sensorEvent.sensor;
 		WritableMap map = mArguments.createMap();
 
-        if (mySensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+        if (mySensor.getType() == Sensor.TYPE_GRAVITY) {
             long curTime = System.currentTimeMillis();
             i++;
-            if ((curTime - lastUpdate) > 92) {
+            if ((curTime - lastUpdate) > delay) {
                 i = 0;
 				map.putDouble("x", sensorEvent.values[0]);
 				map.putDouble("y", sensorEvent.values[1]);
 				map.putDouble("z", sensorEvent.values[2]);
 				map.putDouble("timestamp", sensorEvent.timestamp);
-				sendEvent("Magnetometer", map);
+				sendEvent("Gravity", map);
                 lastUpdate = curTime;
             }
         }

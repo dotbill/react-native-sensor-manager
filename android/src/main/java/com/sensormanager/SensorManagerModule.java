@@ -10,16 +10,18 @@ import com.facebook.react.bridge.Callback;
 import android.util.Log;
 
 public class SensorManagerModule extends ReactContextBaseJavaModule {
-    private static final String		REACT_CLASS = "SensorManager";
-    private AccelerometerRecord		mAccelerometerRecord = null;
-	private GyroscopeRecord 		mGyroscopeRecord = null;
-	private MagnetometerRecord		mMagnetometerRecord = null;
-	private StepCounterRecord		mStepCounterRecord = null;
-	private ThermometerRecord		mThermometerRecord = null;
-	private MotionValueRecord		mMotionValueRecord = null;
-	private OrientationRecord		mOrientationRecord = null;
-	private ProximityRecord			mProximityRecord = null;
-  private LightSensorRecord   mLightSensorRecord = null;
+    private static final String		 REACT_CLASS = "SensorManager";
+    private AccelerometerRecord		 mAccelerometerRecord = null;
+	private GyroscopeRecord          mGyroscopeRecord = null;
+	private MagnetometerRecord	     mMagnetometerRecord = null;
+	private StepCounterRecord	     mStepCounterRecord = null;
+	private ThermometerRecord		 mThermometerRecord = null;
+	private MotionValueRecord		 mMotionValueRecord = null;
+	private OrientationRecord		 mOrientationRecord = null;
+	private ProximityRecord			 mProximityRecord = null;
+    private LightSensorRecord        mLightSensorRecord = null;
+    private GravityRecord            mGravityRecord = null;
+    private LinearAccelerationRecord mLinearAccelerationRecord = null;
 
 	private ReactApplicationContext	mReactContext;
 
@@ -150,6 +152,31 @@ public class SensorManagerModule extends ReactContextBaseJavaModule {
         mLightSensorRecord.stop();
     }
 
+    @ReactMethod
+    public int startGravity(int delay) {
+        if (mGravityRecord == null)
+            mGravityRecord = new GravityRecord(mReactContext);
+        return (mGravityRecord.start(delay));
+    }
+
+    @ReactMethod
+    public void stopGravity() {
+        if (mGravityRecord != null)
+            mGravityRecord.stop();
+    }
+
+    @ReactMethod
+    public int startLinearAcceleration(int delay) {
+        if (mLinearAccelerationRecord == null)
+            mLinearAccelerationRecord = new LinearAccelerationRecord(mReactContext);
+        return (mLinearAccelerationRecord.start(delay));
+    }
+
+    @ReactMethod
+    public void stopLinearAcceleration() {
+        if (mLinearAccelerationRecord != null)
+            mLinearAccelerationRecord.stop();
+    }
 	/*
     @Override
     public ReactBarcodeScannerView createViewInstance(ThemedReactContext context) {
