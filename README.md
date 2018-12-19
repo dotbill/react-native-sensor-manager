@@ -183,6 +183,19 @@ DeviceEventEmitter.addListener('LightSensor', function (data) {
 SensorManager.stopLightSensor();
 ```
 
+### Gravity
+```js
+DeviceEventEmitter.addListener('Gravity', function (data) {
+  /**
+  * data.x
+  * data.y
+  * data.z
+  **/
+});
+SensorManager.startGravity(100);
+SensorManager.stopGravity();
+```
+
 
 ### Proximity Sensor
 ```js

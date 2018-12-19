@@ -1,6 +1,7 @@
 package com.sensormanager;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,6 +12,9 @@ import android.support.annotation.Nullable;
 import java.io.*;
 import java.util.Date;
 import java.util.Timer;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.lang.Integer;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
@@ -63,13 +67,20 @@ public class StepCounterRecord implements SensorEventListener {
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor mySensor = sensorEvent.sensor;
 		WritableMap map = mArguments.createMap();
+        long elapseRealtime = SystemClock.elapsedRealtime();;
+        long today = System.currentTimeMillis();
+        long timeReboot = today - elapseRealtime;
+        int steps = (int) sensorEvent.values[0];
 
         if (mySensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             long curTime = System.currentTimeMillis();
             i++;
             if ((curTime - lastUpdate) > delay) {
                 i = 0;
-				map.putDouble("steps", sensorEvent.values[0]);
+                map.putDouble("reboot", timeReboot);
+                map.putDouble("today", today);
+                map.putDouble("steps", steps);
+                map.putDouble("timestamp", sensorEvent.timestamp);
 				sendEvent("StepCounter", map);
                 lastUpdate = curTime;
             }
